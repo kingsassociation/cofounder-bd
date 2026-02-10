@@ -1,5 +1,5 @@
 {
   "buildCommand": "cd ../.. && pnpm turbo run build --filter=@cofounder/bengolsale",
-  "installCommand": "pnpm install --frozen-lockfile",
+  "installCommand": "pnpm install",
   "framework": "nextjs"
 }
