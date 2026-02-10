@@ -37,7 +37,7 @@ export async function GET(request: Request) {
             activeOrders,
             totalOrders,
             totalProducts,
-            recentOrders: recentOrders.map(o => ({
+            recentOrders: recentOrders.map((o: any) => ({
                 id: o.id,
                 customer: o.customerName || 'Guest',
                 total: o.total,
