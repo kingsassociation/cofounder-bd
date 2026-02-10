@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Cinzel, Inter, Playfair_Display } from "next/font/google";
+import { Cinzel, Hind_Siliguri, Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({
@@ -18,6 +18,12 @@ const cinzel = Cinzel({
   weight: ["400", "500", "600", "700", "800", "900"],
 });
 
+const hindSiliguri = Hind_Siliguri({
+  variable: "--font-hind",
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+});
+
 export const metadata: Metadata = {
   title: "Raafidan | Islamic Fragrance House",
   description: "Premium Attar & Fragrance Crafted for Purity & Presence",
@@ -31,7 +37,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.variable} ${playfair.variable} ${cinzel.variable} antialiased`}
+        className={`${inter.variable} ${playfair.variable} ${cinzel.variable} ${hindSiliguri.variable} antialiased`}
       >
         {children}
       </body>
