@@ -2,6 +2,9 @@
   "name": "@cofounder/database",
   "version": "1.0.0",
   "main": "index.ts",
+  "scripts": {
+    "postinstall": "prisma generate --schema=./prisma/schema.prisma"
+  },
   "dependencies": {
     "@cofounder/types": "workspace:*",
     "@prisma/adapter-pg": "^7.2.0",
