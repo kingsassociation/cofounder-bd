@@ -1,6 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
-  "buildCommand": "turbo run build --filter=!@cofounder/isratsshop",
+  "buildCommand": "turbo run build",
   "ignoreCommand": "git diff HEAD^ HEAD --quiet ."
 }
