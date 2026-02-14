@@ -3,6 +3,7 @@ import AuthProvider from "@/components/auth/AuthProvider";
 import Navbar from "@/components/Navbar";
 import WishlistInitializer from "@/components/wishlist/WishlistInitializer";
 import { siteConfig } from "@/lib/site-config";
+import { FacebookPixel } from "@cofounder/ui";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Toaster } from "sonner";
@@ -23,6 +24,7 @@ export default async function RootLayout({
       <WishlistInitializer />
       <html lang="en">
         <body className={inter.className}>
+          <FacebookPixel pixelId="3919035388228710" />
           <Navbar />
           {children}
           <Toaster position="top-right" richColors offset="80px" />

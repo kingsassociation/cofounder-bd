@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+@theme {
+  --font-inter: var(--font-inter);
+  --font-cinzel: var(--font-cinzel);
+  --font-hind: var(--font-hind);
+}
+
+@source "../**/*.{ts,tsx}";
+
+
+:root {
+  --background: #ffffff;
+  --foreground: #0f172a;
+}
+
+@layer base {
+  body {
+    @apply bg-white text-slate-900;
+  }
+  
+  .bangla-font {
+    font-family: var(--font-hind), system-ui, sans-serif;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-indigo-600 text-white hover:bg-indigo-700 transition-all duration-300 active:scale-95;
+  }
+  
+  .premium-card {
+    @apply bg-white border border-slate-100 rounded-[3rem] shadow-sm hover:shadow-xl transition-all duration-500;
+  }
+}
+
+@keyframes revealFade {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-revealFade {
+  animation: revealFade 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}

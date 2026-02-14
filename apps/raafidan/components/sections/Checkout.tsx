@@ -147,8 +147,8 @@ export function Checkout({ formRef, initialProducts }: CheckoutProps) {
             <Star size={14} className="fill-brand-gold" />
             Original Fragrance 
           </div>
-          <h2 className="text-4xl md:text-7xl font-brand font-black text-brand-black mb-6 tracking-tight">আপনার প্যাকটি <span className="text-brand-gold">বাছাই করুন</span></h2>
-          <p className="text-gray-500 font-body text-lg max-w-2xl mx-auto leading-relaxed">
+          <h2 className="text-4xl md:text-7xl font-bangla font-black text-brand-black mb-6 tracking-tight">আপনার প্যাকটি <span className="text-brand-gold">বাছাই করুন</span></h2>
+          <p className="text-gray-500 font-bangla text-lg max-w-2xl mx-auto leading-relaxed">
              সুন্নাহ অনুপ্রাণিত খাঁটি ও অ্যালকোহল মুক্ত আতরের সেরা কালেকশন। 
              নিচ থেকে আপনার পছন্দের প্যাকেজটি সিলেক্ট করে অর্ডার করুন।
           </p>
@@ -216,7 +216,7 @@ export function Checkout({ formRef, initialProducts }: CheckoutProps) {
 
                 <div className="space-y-4">
                   <div className="flex justify-between items-start">
-                    <h3 className="text-xl font-brand font-bold text-brand-black leading-tight">
+                    <h3 className="text-xl font-bangla font-bold text-brand-black leading-tight">
                         {pkg.name}
                     </h3>
                     <div className="text-right">
@@ -239,7 +239,7 @@ export function Checkout({ formRef, initialProducts }: CheckoutProps) {
                         </div>
                       </>
                     ) : pkg.description ? (
-                      <p className="text-xs text-gray-600 font-body leading-relaxed">{pkg.description}</p>
+                      <p className="text-xs text-gray-600 font-bangla leading-relaxed">{pkg.description}</p>
                     ) : null}
                   </div>
                 </div>
@@ -254,8 +254,8 @@ export function Checkout({ formRef, initialProducts }: CheckoutProps) {
                     <div className="w-12 h-12 bg-brand-gold/20 rounded-2xl flex items-center justify-center text-brand-gold">
                        <Star className="w-6 h-6" />
                     </div>
-                    <h3 className="text-2xl font-brand font-bold">সকল অর্ডারে ফ্রি ডেলিভারি!</h3>
-                    <p className="text-brand-lightgray/60 text-sm leading-relaxed">
+                    <h3 className="text-2xl font-bangla font-bold">সকল অর্ডারে ফ্রি ডেলিভারি!</h3>
+                    <p className="text-brand-lightgray/60 text-sm leading-relaxed font-bangla">
                         আপনি যে প্যাকেজই সিলেক্ট করেন না কেন, আমরা চার্জ নিচ্ছি একদম <span className="text-brand-gold font-bold">০ টাকা</span>। এবং পণ্য হাতে পেয়ে টাকা পরিশোধ করার সুবিধা।
                     </p>
                     <div className="flex items-center gap-4 pt-4">
@@ -284,8 +284,8 @@ export function Checkout({ formRef, initialProducts }: CheckoutProps) {
                     <div className="w-24 h-24 bg-green-50 text-green-500 rounded-full flex items-center justify-center mb-6 shadow-xl">
                       <Check className="w-12 h-12" />
                     </div>
-                    <h2 className="text-3xl font-brand font-bold text-brand-black mb-2">ধন্যবাদ!</h2>
-                    <p className="text-gray-500 font-body text-sm mb-8 leading-relaxed">
+                    <h2 className="text-3xl font-bangla font-bold text-brand-black mb-2">ধন্যবাদ!</h2>
+                    <p className="text-gray-500 font-bangla text-sm mb-8 leading-relaxed">
                         আপনার অর্ডারটি সফলভাবে রিসিভ করা হয়েছে।<br/>
                         অর্ডার কনফার্ম করতে আমাদের প্রতিনিধি আপনাকে শীঘ্রই কল করবেন।
                     </p>
@@ -305,8 +305,8 @@ export function Checkout({ formRef, initialProducts }: CheckoutProps) {
                     className="space-y-8"
                   >
                     <div>
-                        <h2 className="text-2xl font-brand font-bold text-brand-black">অর্ডার করুন</h2>
-                        <p className="text-xs font-body text-gray-400 mt-1 uppercase tracking-widest">নিচের তথ্যগুলো পূরণ করুন</p>
+                        <h2 className="text-2xl font-bangla font-bold text-brand-black">অর্ডার করুন</h2>
+                        <p className="text-xs font-bangla text-gray-400 mt-1 uppercase tracking-widest">নিচের তথ্যগুলো পূরণ করুন</p>
                     </div>
                     
                     <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
@@ -317,7 +317,7 @@ export function Checkout({ formRef, initialProducts }: CheckoutProps) {
                           placeholder="আপনার নাম" 
                           value={formData.name}
                           onChange={e => setFormData({...formData, name: e.target.value})}
-                          className="w-full bg-brand-offwhite border border-transparent rounded-2xl pl-12 pr-5 py-4 text-sm focus:outline-none focus:ring-2 focus:ring-brand-gold/20 focus:bg-white focus:border-brand-gold/30 transition-all font-body" 
+                          className="w-full bg-brand-offwhite border border-transparent rounded-2xl pl-12 pr-5 py-4 text-sm focus:outline-none focus:ring-2 focus:ring-brand-gold/20 focus:bg-white focus:border-brand-gold/30 transition-all font-bangla" 
                         />
                       </div>
 
@@ -328,7 +328,7 @@ export function Checkout({ formRef, initialProducts }: CheckoutProps) {
                           placeholder="মোবাইল নাম্বার" 
                           value={formData.phone}
                           onChange={e => setFormData({...formData, phone: e.target.value})}
-                          className="w-full bg-brand-offwhite border border-transparent rounded-2xl pl-12 pr-5 py-4 text-sm focus:outline-none focus:ring-2 focus:ring-brand-gold/20 focus:bg-white focus:border-brand-gold/30 transition-all font-body" 
+                          className="w-full bg-brand-offwhite border border-transparent rounded-2xl pl-12 pr-5 py-4 text-sm focus:outline-none focus:ring-2 focus:ring-brand-gold/20 focus:bg-white focus:border-brand-gold/30 transition-all font-bangla" 
                         />
                       </div>
 
@@ -339,7 +339,7 @@ export function Checkout({ formRef, initialProducts }: CheckoutProps) {
                           placeholder="পূর্ণ ঠিকানা (বাসা নং, রোড, এলাকা)" 
                           value={formData.address}
                           onChange={e => setFormData({...formData, address: e.target.value})}
-                          className="w-full bg-brand-offwhite border border-transparent rounded-2xl pl-12 pr-5 py-4 text-sm focus:outline-none focus:ring-2 focus:ring-brand-gold/20 focus:bg-white focus:border-brand-gold/30 transition-all font-body" 
+                          className="w-full bg-brand-offwhite border border-transparent rounded-2xl pl-12 pr-5 py-4 text-sm focus:outline-none focus:ring-2 focus:ring-brand-gold/20 focus:bg-white focus:border-brand-gold/30 transition-all font-bangla" 
                         />
                       </div>
 
@@ -364,7 +364,7 @@ export function Checkout({ formRef, initialProducts }: CheckoutProps) {
                                                 <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center overflow-hidden border border-white/5 relative">
                                                     <Image src={p.imageUrl} alt={p.name} fill className="object-contain p-1" />
                                                 </div>
-                                                <span className="text-xs font-body font-medium text-brand-lightgray truncate max-w-[120px]">{p.name}</span>
+                                                <span className="text-xs font-bangla font-medium text-brand-lightgray truncate max-w-[120px]">{p.name}</span>
                                             </div>
                                             <button 
                                                 onClick={() => togglePackage(p.id)}
@@ -375,7 +375,7 @@ export function Checkout({ formRef, initialProducts }: CheckoutProps) {
                                         </div>
                                     ))
                                 ) : (
-                                    <div className="text-center py-4 opacity-30 italic text-[10px] font-body">
+                                    <div className="text-center py-4 opacity-30 italic text-[10px] font-bangla">
                                         কোন প্যাকেজ সিলেক্ট করা হয়নি
                                     </div>
                                 )}

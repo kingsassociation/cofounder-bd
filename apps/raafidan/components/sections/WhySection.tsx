@@ -17,10 +17,10 @@ export function WhySection() {
 
                     <div className="relative z-10 text-center space-y-12">
                         <div className="space-y-4">
-                            <h2 className="text-3xl md:text-4xl font-display font-medium text-brand-black">
+                            <h2 className="text-3xl md:text-4xl font-bangla font-medium text-brand-black">
                                 কেন রাফিদান?
                             </h2>
-                            <p className="text-brand-darkgray/60 max-w-lg mx-auto font-light leading-relaxed">
+                            <p className="text-brand-darkgray/60 max-w-lg mx-auto font-light leading-relaxed font-bangla">
                                 আমরা শুধু আতর বিক্রি করি না, আমরা একটি পবিত্র অনুভূতি পৌঁছে দিই।
                             </p>
                         </div>
@@ -31,7 +31,7 @@ export function WhySection() {
                                     <div className="w-10 h-10 rounded-full bg-brand-offwhite flex items-center justify-center shrink-0 text-brand-gold">
                                         <CheckCircle2 size={20} />
                                     </div>
-                                    <span className="text-brand-darkgray font-medium font-body text-lg">
+                                    <span className="text-brand-darkgray font-medium font-bangla text-lg">
                                         {reason}
                                     </span>
                                 </div>
@@ -40,7 +40,7 @@ export function WhySection() {
 
                         <div className="pt-8">
                              <div className="inline-block px-6 py-3 bg-brand-beige rounded-2xl border border-brand-gold/20">
-                                <p className="text-brand-darkgray text-sm font-medium italic">
+                                <p className="text-brand-darkgray text-sm font-medium italic font-brand">
                                     "The best perfume is that whose scent is strong and whose color is hidden."
                                 </p>
                              </div>

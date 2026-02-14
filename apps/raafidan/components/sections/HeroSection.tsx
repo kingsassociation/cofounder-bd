@@ -37,7 +37,7 @@ export function HeroSection({ onOrderClick }: HeroProps) {
 
                 {/* Sub-headline (Bangla) */}
                 <div className="bg-white/5 backdrop-blur-sm border border-white/10 p-6 rounded-2xl max-w-xl mx-auto mt-8">
-                    <p className="text-base md:text-lg text-brand-offwhite font-medium leading-relaxed font-body">
+                    <p className="text-base md:text-lg text-brand-offwhite font-medium leading-relaxed font-bangla">
                         খাঁটি আতর ও ইসলামিক সুগন্ধি<br />
                         <span className="text-brand-gold/90 text-sm mt-2 block opacity-90">নামাজ, ইবাদত ও দৈনন্দিন ব্যবহারের জন্য</span>
                     </p>

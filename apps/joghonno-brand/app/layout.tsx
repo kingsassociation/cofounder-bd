@@ -1,15 +1,10 @@
 import { FacebookPixel } from "@cofounder/ui";
 import type { Metadata } from "next";
-import { Cinzel, Hind_Siliguri, Inter, Playfair_Display } from "next/font/google";
+import { Cinzel, Hind_Siliguri, Inter } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({
   variable: "--font-inter",
-  subsets: ["latin"],
-});
-
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
   subsets: ["latin"],
 });
 
@@ -26,8 +21,8 @@ const hindSiliguri = Hind_Siliguri({
 });
 
 export const metadata: Metadata = {
-  title: "Raafidan | Islamic Fragrance House",
-  description: "Premium Attar & Fragrance Crafted for Purity & Presence",
+  title: "Joghonno Brand | Digital Growth Agency",
+  description: "Premium Digital Growth Strategy & Web Development",
 };
 
 export default function RootLayout({
@@ -38,7 +33,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.variable} ${playfair.variable} ${cinzel.variable} ${hindSiliguri.variable} antialiased`}
+        className={`${inter.variable} ${cinzel.variable} ${hindSiliguri.variable} antialiased`}
       >
         <FacebookPixel pixelId="3919035388228710" />
         {children}

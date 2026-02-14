@@ -16,8 +16,8 @@ export function TrustStrip() {
                         <div key={idx} className="flex items-center justify-center gap-3 opacity-80 hover:opacity-100 transition-opacity">
                             <item.icon className="w-5 h-5 text-brand-gold" />
                             <div className="text-left">
-                                <p className="text-xs font-bold uppercase tracking-widest">{item.text}</p>
-                                <p className="text-[10px] text-gray-400">{item.sub}</p>
+                                <p className="text-xs font-bold uppercase tracking-widest font-brand">{item.text}</p>
+                                <p className="text-[10px] text-gray-400 font-brand">{item.sub}</p>
                             </div>
                         </div>
                     ))}

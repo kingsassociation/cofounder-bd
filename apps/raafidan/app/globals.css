@@ -9,11 +9,11 @@
   --color-brand-beige: #F4EDE4;
 
   --font-display: var(--font-playfair);
-  --font-body: var(--font-inter);
+  --font-body: var(--font-hind);
   --font-brand: var(--font-cinzel);
   --font-bangla: var(--font-hind);
   
-  --font-sans: var(--font-cinzel), var(--font-hind), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-cinzel), var(--font-hind), sans-serif;
   --font-serif: var(--font-playfair);
 }
 
