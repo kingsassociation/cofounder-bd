@@ -32,7 +32,7 @@ export function HeroSection({ onOrderClick }: HeroProps) {
 
                 {/* Sub-headline (English) */}
                 <p className="text-lg md:text-xl font-light text-brand-lightgray/90 tracking-wide max-w-2xl mx-auto">
-                    Premium Attar & Fragrance Crafted for Purity & Presence
+                    Premium Attar Collection - Long Lasting & Alcohol Free Perfume
                 </p>
 
                 {/* Sub-headline (Bangla) */}
