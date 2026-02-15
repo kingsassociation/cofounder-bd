@@ -1,7 +1,5 @@
-import { PrismaClient } from '@prisma/client';
 import { COMBOS } from '../app/constants';
-
-const prisma = new PrismaClient();
+import prisma from '../lib/prisma';
 
 async function main() {
     console.log('Seeding StyleHunt brand and products...');
@@ -27,7 +25,7 @@ async function main() {
             price: combo.price,
             quantity: 100, // Default quantity
             imageUrl: combo.image,
-            category: combo.isPack ? 'Package' : 'Individual',
+            category: combo.isPack ? 'Package' : (combo.category || 'Individual'),
             size: ['Free Size'],
             color: combo.color ? [combo.color] : [],
             isPack: combo.isPack,

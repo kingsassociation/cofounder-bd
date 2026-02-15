@@ -16,6 +16,7 @@ export interface Combo {
   description: string;
   isPack: boolean;
   color?: string;
+  category?: string;
 }
 
 export interface FAQItem {

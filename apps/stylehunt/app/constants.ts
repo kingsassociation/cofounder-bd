@@ -22,13 +22,14 @@ export const HEJEL_PRODUCTS = [
   'Soft Beige & Pink Floral', 'Teal Green', 'Warm Taupe Mauve'
 ];
 
-export const JOIPURI_PRODUCTS = [
-  'Black & White', 'Black', 'Burnt Umber', 'Crimson Coral & White',
-  'Dark Cayan', 'Dark pink', 'Dark yellow & White', 'Deep Teal & White',
-  'Gray & white', 'Olive Moss & White', 'Orange & White', 'Oxblood',
-  'Pink & White', 'Pink', 'White & Orange', 'White & Yellow',
-  'White &_', 'Yellow & White', 'light pink'
+export const STARJHORJET_PRODUCTS = [
+  'Dark Teal', 'Deep Rose', 'Dusty Rose', 'Golden Brown'
 ];
+
+export const COMBO_DISCOUNTS = {
+  6: 0.05, // 5% for 6+ items
+  3: 0.03, // 3% for 3+ items
+};
 
 export const COMBOS: Combo[] = [
   {
@@ -49,6 +50,17 @@ export const COMBOS: Combo[] = [
     isPack: true,
     color: 'Mixed'
   },
+  ...STARJHORJET_PRODUCTS.map(name => ({
+    id: `starjhorjet-${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
+    name: `${name} Three Piece`,
+    price: 2000,
+    originalPrice: 2500,
+    image: `/products/Starjhorjet/${name}.png`,
+    description: `Product Details:\n\nProduct Code: A1241525\nColour: ${name}\nFabric: Star Jhorjet\nDesign: Modest with star jhorjet pattern\nSet Includes: Kameez, Salwar & Unstitched Dupatta\nSize: Free Size (Fits most)`,
+    isPack: false,
+    color: name,
+    category: 'Starjhorjet'
+  })),
   ...HEJEL_PRODUCTS.map(name => ({
     id: name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
     name: `${name} Hejel`,
@@ -57,17 +69,8 @@ export const COMBOS: Combo[] = [
     image: `/products/${name}.png`,
     description: `• Product Name: Hejel\n• Product Code: MH400812\n• Colour: ${name}\n• Fabric: Cotton\n• Design: Relaxed and modest\n• Set Includes: Kameez, Salwar & Dupatta\n• Size: Free Size`,
     isPack: false,
-    color: name
-  })),
-  ...JOIPURI_PRODUCTS.map(name => ({
-    id: `joipuri-${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
-    name: `${name} Joipuri`,
-    price: 850,
-    originalPrice: 1000,
-    image: `/products/Joipuri/${name}.png`,
-    description: `Product Details:\n• Product Code: MJ190510\n• Fabric: Premium Joipuri Cotton\n• Design: Traditional yet elegant\n• Set Includes: Kameez, Salwar & Unstitched Dupatta\n• Size: Free Size (Fits most)`,
-    isPack: false,
-    color: name
+    color: name,
+    category: 'Hejel'
   }))
 ];
 
