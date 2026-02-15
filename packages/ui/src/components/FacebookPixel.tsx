@@ -32,6 +32,8 @@ const FacebookPixel: React.FC<FacebookPixelProps> = ({ pixelId = "39190353882287
     })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
 
     // @ts-ignore
+    fbq('set', 'autoConfig', false, pixelId);
+    // @ts-ignore
     fbq('init', pixelId);
     // @ts-ignore
     fbq('track', 'PageView');

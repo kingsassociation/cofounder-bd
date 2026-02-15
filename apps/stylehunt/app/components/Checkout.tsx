@@ -29,6 +29,7 @@ const Checkout: React.FC<CheckoutProps> = ({ formRef, initialProducts }) => {
       trackEvent("ViewContent", {
         content_ids: initialProducts.map(p => p.id),
         content_type: 'product',
+        content_category: "Women's Fashion",
         vendor: 'stylehunt'
       });
     }
@@ -94,6 +95,7 @@ const Checkout: React.FC<CheckoutProps> = ({ formRef, initialProducts }) => {
           trackEvent("AddToCart", {
             content_ids: [product.id],
             content_name: product.name,
+            content_category: "Women's Fashion",
             value: product.price,
             currency: "BDT"
           });
@@ -118,7 +120,8 @@ const Checkout: React.FC<CheckoutProps> = ({ formRef, initialProducts }) => {
     trackEvent("InitiateCheckout", {
       value: total,
       currency: "BDT",
-      content_ids: activeProducts.map(p => p.id)
+      content_ids: activeProducts.map(p => p.id),
+      content_category: "Women's Fashion"
     });
 
     setIsSubmitting(true);
@@ -160,6 +163,7 @@ const Checkout: React.FC<CheckoutProps> = ({ formRef, initialProducts }) => {
         value: total,
         currency: "BDT",
         content_ids: activeProducts.map(item => item.id),
+        content_category: "Women's Fashion",
         vendor: 'stylehunt'
       });
 

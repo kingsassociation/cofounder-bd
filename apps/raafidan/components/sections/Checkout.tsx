@@ -49,6 +49,7 @@ export function Checkout({ formRef, initialProducts }: CheckoutProps) {
       trackEvent("ViewContent", {
         content_ids: products.map(p => p.id),
         content_type: 'product',
+        content_category: 'Fragrance',
         vendor: 'raafidan'
       });
     }
@@ -90,6 +91,7 @@ export function Checkout({ formRef, initialProducts }: CheckoutProps) {
         trackEvent("AddToCart", {
           content_ids: [id],
           content_name: products.find(p => p.id === id)?.name,
+          content_category: 'Fragrance',
           value: products.find(p => p.id === id)?.price,
           currency: "BDT"
         });
@@ -127,7 +129,8 @@ export function Checkout({ formRef, initialProducts }: CheckoutProps) {
     trackEvent("InitiateCheckout", {
       value: total,
       currency: "BDT",
-      content_ids: products.filter(p => selectedIds.includes(p.id)).map(p => p.id)
+      content_ids: products.filter(p => selectedIds.includes(p.id)).map(p => p.id),
+      content_category: 'Fragrance'
     });
 
     setIsSubmitting(true);
@@ -168,6 +171,7 @@ export function Checkout({ formRef, initialProducts }: CheckoutProps) {
         value: total,
         currency: "BDT",
         content_ids: products.filter(p => selectedIds.includes(p.id)).map(p => p.id),
+        content_category: 'Fragrance',
         vendor: 'raafidan'
       });
 

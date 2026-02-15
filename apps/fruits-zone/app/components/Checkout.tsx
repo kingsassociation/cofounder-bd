@@ -39,6 +39,7 @@ export default function Checkout({ initialProducts }: CheckoutProps) {
       trackEvent("ViewContent", {
         content_ids: displayProducts.map(p => p.id),
         content_type: 'product',
+        content_category: 'Dates & Fruits',
         vendor: 'fruits-zone'
       });
     }
@@ -64,6 +65,7 @@ export default function Checkout({ initialProducts }: CheckoutProps) {
       trackEvent("AddToCart", {
         content_ids: [product.id],
         content_name: product.name,
+        content_category: 'Dates & Fruits',
         value: variant.price,
         currency: "BDT"
       });
@@ -117,7 +119,8 @@ export default function Checkout({ initialProducts }: CheckoutProps) {
     trackEvent("InitiateCheckout", {
       value: total,
       currency: "BDT",
-      content_ids: activeItems.map(item => item.productId)
+      content_ids: activeItems.map(item => item.productId),
+      content_category: 'Dates & Fruits'
     });
 
     setIsSubmitting(true);
@@ -160,6 +163,7 @@ export default function Checkout({ initialProducts }: CheckoutProps) {
         value: total,
         currency: "BDT",
         content_ids: activeItems.map(item => item.productId),
+        content_category: 'Dates & Fruits',
         vendor: 'fruits-zone'
       });
     } catch (error: any) {
