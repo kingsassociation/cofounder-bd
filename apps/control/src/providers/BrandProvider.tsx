@@ -5,7 +5,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 
 interface BrandContextType {
     activeBrand: Brand | null;
-    setActiveBrand: (brand: Brand) => void;
+    setActiveBrand: (brand: Brand | null) => void;
     brands: Brand[];
     refreshBrands: () => Promise<void>;
 }
@@ -62,9 +62,13 @@ export function BrandProvider({ children }: { children: React.ReactNode }) {
         }
     }, [loading, brands]);
 
-    const setActiveBrand = (brand: Brand) => {
+    const setActiveBrand = (brand: Brand | null) => {
         setActiveBrandState(brand);
-        localStorage.setItem('cofounder_brand_context', brand.id);
+        if (brand && brand.id) {
+            localStorage.setItem('cofounder_brand_context', brand.id);
+        } else {
+            localStorage.removeItem('cofounder_brand_context');
+        }
     };
 
     return (

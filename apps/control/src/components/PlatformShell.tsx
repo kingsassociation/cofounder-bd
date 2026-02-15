@@ -125,19 +125,19 @@ export function PlatformShell({ children }: { children: React.ReactNode }) {
                                         <div className="p-1.5 space-y-1">
                                             <button
                                                 onClick={() => {
-                                                    setActiveBrand({ id: '', name: 'All Brands', slug: 'all', domain: '' });
+                                                    setActiveBrand(null);
                                                     setIsBrandSwitcherOpen(false);
                                                 }}
                                                 className={cn(
                                                     "w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs transition-all duration-200",
-                                                    !activeBrand || activeBrand.id === ''
+                                                    !activeBrand
                                                         ? "bg-slate-900 text-white shadow-lg shadow-slate-900/20 font-bold" 
                                                         : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                                                 )}
                                             >
                                                 <div className={cn(
                                                     "w-6 h-6 rounded-lg flex items-center justify-center text-[9px] font-black uppercase",
-                                                    !activeBrand || activeBrand.id === '' ? "bg-white/20" : "bg-slate-100"
+                                                    !activeBrand ? "bg-white/20" : "bg-slate-100"
                                                 )}>
                                                     A
                                                 </div>
