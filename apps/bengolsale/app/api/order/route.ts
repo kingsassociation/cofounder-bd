@@ -58,6 +58,7 @@ export async function POST(req: Request) {
                         selectedSize: item.selectedSize,
                         selectedColor: item.selectedColor,
                         imageUrl: item.imageUrl,
+                        metadata: item.metadata,
                     })),
                 },
             },

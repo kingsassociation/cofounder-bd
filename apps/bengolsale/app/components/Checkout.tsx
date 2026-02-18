@@ -3,24 +3,32 @@
 import { trackEvent } from '@/lib/facebookPixel';
 import { calculateDeliveryCharge, formatPrice } from '@cofounder/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Check, Package, ShoppingCart, X } from 'lucide-react';
+import { Check, Package, ShoppingCart, X, Zap } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { SIZES } from '../constants';
-import { ProductSize } from '../types';
+import { COLORS, SIZES } from '../constants';
+import { CartItem, Product, ProductSize } from '../types';
 
 interface CheckoutProps {
   formRef: React.RefObject<HTMLDivElement | null>;
-  initialProducts: any[];
+  initialProducts: Product[];
 }
 
+const getColorImage = (colorName: string, defaultImage: string) => {
+  const color = COLORS.find(c => 
+      c.name.toLowerCase() === colorName.toLowerCase() || 
+      c.id.toLowerCase() === colorName.toLowerCase()
+  );
+  return color?.image || defaultImage;
+};
+
 const Checkout: React.FC<CheckoutProps> = ({ formRef, initialProducts }) => {
-  const [products, setProducts] = useState<any[]>(initialProducts);
-  const [loading, setLoading] = useState(false);
-  const [selectedItems, setSelectedItems] = useState<Record<string, { size: ProductSize, quantity: number }>>({});
+  const [products] = useState<Product[]>(initialProducts);
+  const [selectedItems, setSelectedItems] = useState<CartItem[]>([]);
   const [deliveryArea, setDeliveryArea] = useState<'inside' | 'outside' | null>(null);
   const [formData, setFormData] = useState({ name: '', phone: '', address: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
+
   const [isOrderSuccess, setIsOrderSuccess] = useState(false);
 
   useEffect(() => {
@@ -34,62 +42,110 @@ const Checkout: React.FC<CheckoutProps> = ({ formRef, initialProducts }) => {
     }
   }, [initialProducts]);
 
-  const selectedIds = Object.keys(selectedItems);
-  const activeProducts = products.filter(p => selectedIds.includes(p.id));
-  
-  const subtotal = activeProducts.reduce((acc, curr) => acc + (curr.price * selectedItems[curr.id].quantity), 0);
-  
-  const hasPack = activeProducts.some(item => item.isPack);
-  const singleItemCount = activeProducts
-    .filter(item => !item.isPack)
-    .reduce((acc, curr) => acc + selectedItems[curr.id].quantity, 0);
+  const flattenedProducts = React.useMemo(() => {
+    const list: any[] = [];
+    initialProducts.forEach(product => {
+        if (product.isPack) {
+            list.push({
+                ...product,
+                itemsCount: product.id.includes('6') ? 6 : 3 // Deduce from ID
+            });
+        } else if (product.hasVariants && product.variants?.stock) {
+            Object.keys(product.variants.stock).forEach(color => {
+                const type = product.name.replace(' T-shirt', '');
+                list.push({
+                    ...product,
+                    displayName: `${color} T-shirt (${type})`,
+                    internalId: `${product.id}-${color}`,
+                    selectedColor: color,
+                    imageUrl: getColorImage(color, product.imageUrl)
+                });
+            });
+        }
+    });
+    return list;
+  }, [initialProducts]);
 
-  const isFreeDelivery = hasPack || singleItemCount >= 3;
-  
+  const totalQuantity = selectedItems.reduce((acc, curr) => acc + curr.quantity, 0);
+
+  const subtotal = React.useMemo(() => {
+    if (totalQuantity >= 6) {
+        const packs = Math.floor(totalQuantity / 6);
+        const remaining = totalQuantity % 6;
+        return (packs * 1350) + (remaining * 250);
+    }
+    return totalQuantity * 250;
+  }, [totalQuantity]);
+
+  const isFreeDelivery = totalQuantity >= 3;
   const deliveryCharge = calculateDeliveryCharge(subtotal, deliveryArea, { isFree: isFreeDelivery });
   const total = subtotal + deliveryCharge;
 
-  const handleSelect = (productId: string, size: ProductSize) => {
-      setSelectedItems(prev => ({
-          ...prev,
-          [productId]: { ...prev[productId], size, quantity: prev[productId]?.quantity || 1 }
-      }));
-  };
+  const addToCart = (product: Product, color: string, size: ProductSize) => {
+    const stock = product.variants?.stock?.[color]?.[size] ?? 0;
+    if (stock <= 0) {
+        toast.error('This size is currently out of stock');
+        return;
+    }
 
-  const handleQuantity = (productId: string, delta: number) => {
-      setSelectedItems(prev => {
-          const item = prev[productId];
-          if (!item) return prev;
-          const newQty = Math.max(1, item.quantity + delta);
-          return {
-              ...prev,
-              [productId]: { ...item, quantity: newQty }
-          };
-      });
-  };
+    setSelectedItems(prev => {
+        const existingItem = prev.find(item => item.productId === product.id && item.color === color && item.size === size);
+        if (existingItem) {
+            if (existingItem.quantity >= stock) {
+                toast.error(`Only ${stock} items available in stock`);
+                return prev;
+            }
+            return prev.map(item => 
+                item === existingItem ? { ...item, quantity: item.quantity + 1 } : item
+            );
+        }
+        
+        const newItem: CartItem = {
+            id: `${product.id}-${color}-${size}-${Date.now()}`,
+            productId: product.id,
+            name: (product as any).displayName || product.name,
+            color,
+            size,
+            quantity: 1,
+            price: product.price,
+            imageUrl: getColorImage(color, product.imageUrl)
+        };
 
-  const handleRemove = (productId: string) => {
-      setSelectedItems(prev => {
-          const newItems = { ...prev };
-          delete newItems[productId];
-          return newItems;
-      });
-  };
-
-  const toggleSelection = (product: any) => {
-      if (selectedItems[product.id]) {
-          handleRemove(product.id);
-      } else {
-          trackEvent("AddToCart", {
+        trackEvent("AddToCart", {
             content_ids: [product.id],
             content_name: product.name,
             content_category: "Men's Apparel",
             value: product.price,
             currency: "BDT"
-          });
-          handleSelect(product.id, 'M');
-      }
-  }
+        });
+
+        return [...prev, newItem];
+    });
+  };
+
+  const [loading, setLoading] = useState(false);
+
+  const handleQuantity = (itemId: string, delta: number) => {
+      setSelectedItems(prev => {
+          const existingItem = prev.find(i => i.id === itemId);
+          if (!existingItem) return prev;
+          
+          const product = products.find(p => p.id === existingItem.productId);
+          const stock = product?.variants?.stock?.[existingItem.color!]?.[existingItem.size!] ?? 999;
+
+          const newQty = Math.max(1, existingItem.quantity + delta);
+          if (newQty > stock) {
+              toast.error(`Only ${stock} items available in stock`);
+              return prev;
+          }
+
+          return prev.map(i => i.id === itemId ? { ...i, quantity: newQty } : i);
+      });
+  };
+
+  const handleRemove = (itemId: string) => {
+      setSelectedItems(prev => prev.filter(item => item.id !== itemId));
+  };
 
   const handleSubmit = async () => {
     if (!formData.name || !formData.phone || !formData.address) {
@@ -100,7 +156,7 @@ const Checkout: React.FC<CheckoutProps> = ({ formRef, initialProducts }) => {
       toast.error('ডেলিভারি এরিয়া সিলেক্ট করুন');
       return;
     }
-    if (activeProducts.length === 0) {
+    if (selectedItems.length === 0) {
       toast.error('Please select at least one item');
       return;
     }
@@ -108,7 +164,7 @@ const Checkout: React.FC<CheckoutProps> = ({ formRef, initialProducts }) => {
     trackEvent("InitiateCheckout", {
       value: total,
       currency: "BDT",
-      content_ids: activeProducts.map(p => p.id),
+      content_ids: [...new Set(selectedItems.map(p => p.productId))],
       content_category: "Men's Apparel"
     });
 
@@ -126,13 +182,15 @@ const Checkout: React.FC<CheckoutProps> = ({ formRef, initialProducts }) => {
             address: formData.address,
             area: deliveryArea
           },
-          items: activeProducts.map(item => ({
-            productId: item.id,
+          items: selectedItems.map(item => ({
+            productId: item.productId,
             name: item.name,
             price: item.price,
-            quantity: selectedItems[item.id].quantity,
-            selectedSize: selectedItems[item.id].size,
-            imageUrl: item.imageUrl
+            quantity: item.quantity,
+            selectedSize: item.size,
+            selectedColor: item.color,
+            imageUrl: item.imageUrl,
+            metadata: item.isBundle ? { bundleItems: item.bundleItems } : null
           })),
           total,
           deliveryCharge
@@ -150,13 +208,13 @@ const Checkout: React.FC<CheckoutProps> = ({ formRef, initialProducts }) => {
       trackEvent("Purchase", {
         value: total,
         currency: "BDT",
-        content_ids: activeProducts.map(item => item.id),
+        content_ids: [...new Set(selectedItems.map(item => item.productId))],
         content_category: "Men's Apparel",
         vendor: 'bengolsale'
       });
 
       setIsOrderSuccess(true);
-      setSelectedItems({});
+      setSelectedItems([]);
       setFormData({ name: '', phone: '', address: '' });
     } catch (error: any) {
       console.error('Order error:', error);
@@ -175,122 +233,175 @@ const Checkout: React.FC<CheckoutProps> = ({ formRef, initialProducts }) => {
     );
   }
 
+const ColorSelector: React.FC<{ product: Product, selectedColor: string, onSelect: (color: string) => void }> = ({ product, selectedColor, onSelect }) => {
+    const colors = Object.keys(product.variants?.stock || {});
+    if (colors.length === 0) return null;
+
+    return (
+        <div className="mb-2">
+            <span className="text-[9px] font-black text-gray-400 uppercase tracking-tight flex items-center gap-1 mb-1">
+                কালার
+            </span>
+            <div className="flex flex-wrap gap-1">
+                {colors.map(color => (
+                    <button
+                        key={color}
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); onSelect(color); }}
+                        className={`group relative px-2.5 py-1 rounded-md text-[9px] font-bold transition-all border ${
+                            selectedColor === color
+                            ? 'bg-brand-dark text-white border-brand-dark shadow-sm'
+                            : 'bg-white text-gray-500 border-gray-100 hover:border-brand-primary/30'
+                        }`}
+                    >
+                        {color}
+                    </button>
+                ))}
+            </div>
+        </div>
+    );
+};
+
+const SizeSelector: React.FC<{ 
+    product: Product, 
+    color: string, 
+    selectedSize: ProductSize | '', 
+    onSelect: (size: ProductSize) => void 
+}> = ({ product, color, selectedSize, onSelect }) => {
+    const stock = product.variants?.stock?.[color] || {};
+    
+    return (
+        <div className="flex flex-wrap gap-1">
+            {SIZES.map(size => {
+                const quantity = stock[size] ?? 0;
+                const isOutOfStock = quantity <= 0;
+                return (
+                    <button
+                        key={size}
+                        type="button"
+                        disabled={isOutOfStock}
+                        onClick={(e) => { e.stopPropagation(); onSelect(size as ProductSize); }}
+                        className={`group relative min-w-[2rem] h-6 rounded-md text-[9px] font-bold transition-all border flex items-center justify-center ${
+                            selectedSize === size
+                            ? 'bg-brand-primary text-white border-brand-primary'
+                            : isOutOfStock
+                                ? 'bg-gray-50 text-gray-300 border-gray-100 cursor-not-allowed grayscale'
+                                : 'bg-white text-gray-600 border-gray-100 hover:border-brand-primary/30'
+                        }`}
+                    >
+                        {size}
+                    </button>
+                );
+            })}
+        </div>
+    );
+};
+
+const ProductCard: React.FC<{ 
+    product: Product & { displayName?: string, selectedColor?: string, internalId?: string }, 
+    onAddToCart: (product: Product, color: string, size: ProductSize) => void 
+}> = ({ product, onAddToCart }) => {
+    const [localSize, setLocalSize] = useState<ProductSize | ''>('');
+    const color = product.selectedColor || '';
+
+    return (
+        <div
+            className="group relative bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300 flex flex-col overflow-hidden"
+        >
+            <div className="relative bg-gray-50 aspect-square group/img overflow-hidden">
+                <img 
+                    src={product.imageUrl} 
+                    alt={product.name} 
+                    className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-500" 
+                />
+            </div>
+            
+            <div className="p-2.5 flex flex-col">
+                <h4 className="font-extrabold text-[12px] text-brand-dark leading-tight line-clamp-1 mb-2">{product.displayName || product.name}</h4>
+                
+                <div className="flex items-center justify-between gap-2 mb-3">
+                    <div className="shrink-0">
+                        <span className="block font-black text-[13px] text-brand-primary leading-none">{formatPrice(product.price)}</span>
+                        <span className="text-[9px] text-gray-300 line-through font-bold">{formatPrice(product.price + 50)}</span>
+                    </div>
+                    <div className="flex-1 flex justify-end">
+                        <SizeSelector product={product} color={color} selectedSize={localSize} onSelect={setLocalSize} />
+                    </div>
+                </div>
+
+                <button
+                    type="button"
+                    onClick={() => {
+                        if (!localSize) {
+                            toast.error('দয়া করে সাইজ সিলেক্ট করুন');
+                            return;
+                        }
+                        onAddToCart(product, color, localSize as ProductSize);
+                        setLocalSize('');
+                    }}
+                    className={`w-full h-8 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all flex items-center justify-center gap-2 ${
+                        localSize 
+                        ? 'bg-brand-dark text-white hover:bg-brand-primary' 
+                        : 'bg-brand-muted text-brand-dark'
+                    }`}
+                >
+                    {localSize ? 'ADD TO CART' : 'SELECT SIZE'}
+                </button>
+            </div>
+        </div>
+    );
+};
+
   return (
-    <section id="checkout" className="py-12 md:py-24 bg-brand-muted overflow-x-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 overflow-x-hidden">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl font-black text-brand-dark mb-4">আপনার প্যাকটি বাছাই করুন</h2>
-          <p className="text-gray-500 text-sm">প্যাক বা সিঙ্গেল টি-শার্ট সিলেক্ট করুন এবং নিজের সাইজ বেছে নিন</p>
+    <section className="py-20 relative overflow-hidden" id="checkout-section">
+      <div className="container mx-auto px-4 relative z-10">
+        {/* Top Offers Banner - Compact with Readable Text */}
+        <div className="mb-12 space-y-4">
+            <div className="flex items-center justify-center gap-2 mb-2">
+                <Zap className="w-3 h-3 text-brand-primary fill-brand-primary" />
+                <h3 className="text-xs font-black text-brand-dark uppercase tracking-widest">সেরা অফারগুলো</h3>
+                <Zap className="w-3 h-3 text-brand-primary fill-brand-primary" />
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-2xl mx-auto">
+                <div className="py-3 px-6 rounded-2xl border border-brand-primary/20 bg-brand-primary/5 flex items-center justify-center gap-4 group transition-all hover:bg-brand-primary/10">
+                    <div className="w-10 h-10 bg-brand-primary text-white rounded-xl flex items-center justify-center shrink-0 shadow-sm">
+                        <Package className="w-5 h-5" />
+                    </div>
+                    <div className="text-left">
+                        <p className="text-sm font-black text-brand-dark leading-tight uppercase">৩ পিস কিনুন</p>
+                        <p className="text-xs text-brand-primary font-bold">ফ্রি ডেলিভারি!</p>
+                    </div>
+                </div>
+                <div className="py-3 px-6 rounded-2xl border border-brand-primary/20 bg-brand-primary/5 flex items-center justify-center gap-4 group transition-all hover:bg-brand-primary/10">
+                    <div className="w-10 h-10 bg-brand-primary/10 text-brand-primary rounded-xl flex items-center justify-center shrink-0">
+                        <Zap className="w-5 h-5" />
+                    </div>
+                    <div className="text-left">
+                        <p className="text-sm font-black text-brand-dark leading-tight uppercase">৬ পিস প্যাক</p>
+                        <p className="text-xs text-brand-primary font-bold">মাত্র ১৩৫০৳ (সেরা ডিল)</p>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-6 md:gap-8 lg:gap-12 items-start">
           
-          <div className="lg:col-span-2 space-y-6 sm:space-y-8 md:space-y-12">
-            
-            <div>
-              <h3 className="text-xs font-black text-brand-primary uppercase tracking-[0.2em] mb-6 ml-0 sm:ml-2">Value Packs (সেরা অফার)</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 w-full">
-                {products.filter(c => c.isPack).map((combo) => (
-                  <div
-                    key={combo.id}
-                    className={`group relative w-full min-w-0 max-w-full overflow-hidden text-left p-4 sm:p-5 md:p-6 rounded-2xl md:rounded-[2.5rem] transition-all duration-300 shadow-sm border border-gray-100 ${
-                      selectedItems[combo.id] ? 'bg-white shadow-[inset_0_0_0_2px_#F97316]' : 'bg-white/50'
-                    }`}
-                  >
-                    <div onClick={() => toggleSelection(combo)} className="cursor-pointer">
-                        <div className="aspect-[4/3] rounded-2xl md:rounded-3xl overflow-hidden mb-3 md:mb-6 bg-gray-200">
-                          <img src={combo.imageUrl} alt={combo.name} className="w-full h-full object-contain" />
-                        </div>
-                        <div className="flex justify-between items-start mb-2">
-                          <h4 className="font-black text-sm md:text-base text-brand-dark">{combo.name}</h4>
-                          <span className="font-black text-sm md:text-base text-brand-primary">{formatPrice(combo.price)}</span>
-                        </div>
-                        <p className="text-xs text-gray-400 mb-3 md:mb-6">{combo.description}</p>
-                    </div>
-                    
-                    <div className="bg-brand-muted/50 p-2 md:p-3 rounded-xl md:rounded-2xl flex items-center justify-between gap-2">
-                        <span className="text-[10px] font-bold text-gray-500 uppercase">Size:</span>
-                        <div className="flex gap-2">
-                            {SIZES.map(size => (
-                                <button
-                                  key={size}
-                                  onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleSelect(combo.id, size as ProductSize);
-                                  }}
-                                  className={`w-8 h-8 rounded-lg text-[10px] font-bold transition-all ${
-                                      selectedItems[combo.id]?.size === size
-                                      ? 'bg-brand-primary text-white shadow-sm ring-1 ring-brand-primary'
-                                      : 'bg-white text-gray-400 hover:bg-gray-100'
-                                  }`}
-                                >
-                                    {size}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
+          <div className="lg:col-span-2 space-y-16">
 
-                    {combo.id === 'pack-6' && (
-                      <div className="absolute top-3 right-3 bg-brand-dark text-white text-[8px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full shadow-md z-10">
-                        Best Value
-                      </div>
-                    )}
-                    
-                    {selectedItems[combo.id] && (
-                        <div className="absolute top-4 left-4 bg-brand-primary text-white p-1 rounded-full shadow-lg">
-                            <Check className="w-4 h-4" />
-                        </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <h3 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-6 ml-0 sm:ml-2 border-t border-gray-100 pt-12">Build Your Own (সিঙ্গেল পিস)</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 w-full">
-                {products.filter(c => !c.isPack).map((combo) => (
-                  <div
-                    key={combo.id}
-                    className={`group relative w-full min-w-0 max-w-full overflow-hidden text-left p-4 md:p-5 rounded-2xl md:rounded-3xl transition-all duration-300 shadow-sm border border-gray-100 ${
-                      selectedItems[combo.id] ? 'bg-white shadow-[inset_0_0_0_2px_#F97316]' : 'bg-white/50'
-                    }`}
-                  >
-                    <div onClick={() => toggleSelection(combo)} className="cursor-pointer">
-                        <div className="aspect-square rounded-lg md:rounded-2xl overflow-hidden mb-2 md:mb-4 bg-gray-200">
-                          <img src={combo.imageUrl} alt={combo.name} className="w-full h-full object-cover" />
-                        </div>
-                        <h4 className="text-xs md:text-sm font-black text-brand-dark mb-1 truncate">{combo.name}</h4>
-                        <p className="text-[10px] md:text-xs font-black text-brand-primary mb-3 md:mb-4">{formatPrice(combo.price)}</p>
-                    </div>
-                    
-                    <div className="grid grid-cols-3 gap-1">
-                        {SIZES.map(size => (
-                            <button
-                              key={size}
-                              onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleSelect(combo.id, size as ProductSize);
-                              }}
-                              className={`h-6 rounded-md text-[8px] font-bold transition-all ${
-                                  selectedItems[combo.id]?.size === size
-                                  ? 'bg-brand-primary text-white ring-1 ring-brand-primary'
-                                  : 'bg-brand-muted text-gray-400 hover:bg-gray-200'
-                              }`}
-                            >
-                                {size}
-                            </button>
-                        ))}
-                    </div>
-
-                    {selectedItems[combo.id] && (
-                      <div className="absolute top-2 right-2 w-5 h-5 bg-brand-primary text-white rounded-full flex items-center justify-center">
-                        <Check className="w-3 h-3" />
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
+            {/* Standard Products Grid */}
+            <div className="relative">
+                <div className="flex items-center gap-3 mb-8">
+                    <h3 className="text-sm font-black text-gray-400 uppercase tracking-[0.2em] whitespace-nowrap">
+                        কালার এবং সাইজ সিলেক্ট করুন
+                    </h3>
+                    <div className="h-px flex-1 bg-gray-100" />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
+                    {flattenedProducts.filter(p => !p.isPack).map((item) => (
+                        <ProductCard key={item.internalId || item.id} product={item} onAddToCart={addToCart} />
+                    ))}
+                </div>
             </div>
           </div>
 
@@ -325,7 +436,7 @@ const Checkout: React.FC<CheckoutProps> = ({ formRef, initialProducts }) => {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                   >
-                      <h2 className="text-2xl font-black text-brand-dark mb-8">চেকআউট</h2>
+                      <h2 className="text-2xl font-black text-brand-dark mb-8">চেকআউট ফর্ম</h2>
                       
                       <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
                         <input 
@@ -362,11 +473,39 @@ const Checkout: React.FC<CheckoutProps> = ({ formRef, initialProducts }) => {
                           <div className="relative z-10">
                             <h3 className="text-xs font-black uppercase tracking-widest text-brand-primary mb-6 flex items-center gap-2">
                               <Package className="w-3 h-3" />
-                              আপনার অর্ডার সামারি
+                              আপনার অর্ডার সামারি ({totalQuantity})
                             </h3>
 
+                            {/* Dynamic Incentives */}
+                            <div className="mb-6 space-y-2">
+                                {totalQuantity > 0 && totalQuantity < 3 && (
+                                    <div className="bg-brand-primary/10 border border-brand-primary/20 rounded-xl p-3 flex items-center gap-3">
+                                        <Package className="w-4 h-4 text-brand-primary shrink-0" />
+                                        <p className="text-[10px] font-bold text-white leading-tight">
+                                            আর <span className="text-brand-primary">{3 - totalQuantity}টি</span> যোগ করলে <span className="text-brand-primary">ফ্রি ডেলিভারি</span> পাবেন!
+                                        </p>
+                                    </div>
+                                )}
+                                {totalQuantity >= 3 && totalQuantity < 6 && (
+                                    <div className="bg-brand-primary/10 border border-brand-primary/20 rounded-xl p-3 flex items-center gap-3">
+                                        <Zap className="w-4 h-4 text-brand-primary shrink-0" />
+                                        <p className="text-[10px] font-bold text-white leading-tight">
+                                            সাবাশ! আর <span className="text-brand-primary">{6 - totalQuantity}টি</span> যোগ করলে <span className="text-brand-primary">ধামাকা ডিসকাউন্ট</span> পাবেন!
+                                        </p>
+                                    </div>
+                                )}
+                                {totalQuantity >= 6 && (
+                                    <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-3 flex items-center gap-3">
+                                        <Check className="w-4 h-4 text-green-500 shrink-0" />
+                                        <p className="text-[10px] font-bold text-green-400 leading-tight">
+                                            অভিনন্দন! আপনি সেরা ডিসকাউন্ট এবং ফ্রি ডেলিভারি আনলক করেছেন!
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+
                             <div className="space-y-3 mb-6 max-h-[40vh] sm:max-h-[350px] overflow-y-auto pr-1">
-                              {activeProducts.map(item => (
+                              {selectedItems.map(item => (
                                   <div 
                                       key={item.id} 
                                       className="flex items-center gap-3 bg-white/5 p-2 sm:p-3 rounded-2xl text-white relative group border border-white/5 hover:border-white/10 transition-all"
@@ -380,18 +519,17 @@ const Checkout: React.FC<CheckoutProps> = ({ formRef, initialProducts }) => {
                                           <p className="text-[11px] font-black leading-tight truncate">
                                               {item.name}
                                           </p>
-                                          <p className="text-[11px] font-black shrink-0">{formatPrice(item.price * selectedItems[item.id].quantity)}</p>
+                                          <p className="text-[11px] font-black shrink-0">{formatPrice(item.price * item.quantity)}</p>
                                         </div>
-                                        
-                                        <div className="flex items-center justify-between">
-                                          <p className="text-[9px] text-gray-400 font-bold">
-                                              Size: <span className="text-brand-primary">{selectedItems[item.id].size}</span>
+                                                                                 <p className="text-[9px] text-gray-400 font-bold">
+                                              Size: <span className="text-brand-primary">{item.size}</span>
+                                              {item.color && <span className="ml-2">Color: <span className="text-brand-primary">{item.color}</span></span>}
                                           </p>
                                           
                                           <div className="flex items-center gap-3">
                                             <div className="flex items-center gap-2 bg-black/40 rounded-lg px-2 py-1 shrink-0">
                                                 <button onClick={() => handleQuantity(item.id, -1)} className="text-white/60 hover:text-brand-primary px-1 font-bold text-[10px] transition">-</button>
-                                                <span className="font-bold text-white w-3 text-center text-[10px]">{selectedItems[item.id].quantity}</span>
+                                                <span className="font-bold text-white w-3 text-center text-[10px]">{item.quantity}</span>
                                                 <button onClick={() => handleQuantity(item.id, 1)} className="text-white/60 hover:text-brand-primary px-1 font-bold text-[10px] transition">+</button>
                                             </div>
                                             
@@ -402,11 +540,10 @@ const Checkout: React.FC<CheckoutProps> = ({ formRef, initialProducts }) => {
                                                 <X className="w-3 h-3" />
                                             </button>
                                           </div>
-                                        </div>
                                       </div>
                                   </div>
                               ))}
-                              {activeProducts.length === 0 && (
+                              {selectedItems.length === 0 && (
                                 <div className="flex flex-col items-center justify-center py-10 opacity-30 italic">
                                   <ShoppingCart className="w-8 h-8 mb-2" />
                                   <p className="text-[10px]">পণ্য সিলেক্ট করুন...</p>
@@ -436,7 +573,7 @@ const Checkout: React.FC<CheckoutProps> = ({ formRef, initialProducts }) => {
                                 <button 
                                     type="button"
                                     onClick={handleSubmit}
-                                    disabled={activeProducts.length === 0 || isSubmitting}
+                                    disabled={selectedItems.length === 0 || isSubmitting}
                                     className="w-full sm:w-auto bg-brand-primary text-white px-8 py-4 rounded-2xl text-sm font-black shadow-xl shadow-brand-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:grayscale disabled:scale-100 uppercase tracking-widest"
                                 >
                                   {isSubmitting ? 'Wait...' : 'Confirm'}

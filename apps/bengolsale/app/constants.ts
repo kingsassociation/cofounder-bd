@@ -1,5 +1,5 @@
 import { Gem, Maximize, Palette, Zap } from 'lucide-react';
-import { Combo, FAQItem, ProductColor } from './types';
+import { FAQItem, ProductColor } from './types';
 
 export const COLORS: ProductColor[] = [
   { id: 'black', name: 'Kalo (Black)', hex: '#000000', image: '/products/black.png' },
@@ -8,36 +8,6 @@ export const COLORS: ProductColor[] = [
   { id: 'blue', name: 'Blue', hex: '#1E40AF', image: '/products/blue.png' },
   { id: 'olive', name: 'Olive', hex: '#556B2F', image: '/products/olive.png' },
   { id: 'grey', name: 'Gray', hex: '#9CA3AF', image: '/products/grey.png' },
-];
-
-export const COMBOS: Combo[] = [
-  {
-    id: 'pack-6',
-    name: '৬ পিস কম্বো প্যাক',
-    price: 1350,
-    image: '/products/pack-6.png',
-    description: 'সেরা ভ্যালু প্যাক - সব কালারের মিক্স (Size: M, L, XL)',
-    isPack: true,
-    color: 'Mixed'
-  },
-  {
-    id: 'pack-3',
-    name: '৩ পিস কম্বো প্যাক',
-    price: 750,
-    image: '/products/pack-3.png',
-    description: '৩টি প্রিমিয়াম টি-শার্টের কম্বো (Size: M, L, XL)',
-    isPack: true,
-    color: 'Mixed'
-  },
-  ...COLORS.map(c => ({
-    id: c.id,
-    name: `${c.name} Single`,
-    price: 250,
-    image: c.image,
-    description: '১টি প্রিমিয়াম টি-শার্ট',
-    isPack: false,
-    color: c.name
-  }))
 ];
 
 export const SIZES = ['M', 'L', 'XL'];
