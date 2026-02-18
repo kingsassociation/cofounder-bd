@@ -285,20 +285,6 @@ export function Checkout({ formRef, initialProducts }: CheckoutProps) {
                       selectedPackages[pkg.id] ? "scale-105" : "group-hover:scale-110"
                     )}
                   />
-                  <AnimatePresence>
-                    {selectedPackages[pkg.id] && (
-                      <motion.div 
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="absolute inset-0 bg-brand-gold/20 backdrop-blur-[2px] flex items-center justify-center transition-opacity duration-300"
-                      >
-                         <div className="w-20 h-20 bg-brand-black rounded-full flex items-center justify-center text-brand-gold shadow-2xl border-4 border-white/10">
-                            <Check className="w-10 h-10 stroke-[4]" />
-                         </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
                 </div>
 
                 <div className="space-y-4">
@@ -338,6 +324,27 @@ export function Checkout({ formRef, initialProducts }: CheckoutProps) {
                         </div>
                       </div>
                     ) : null}
+                  </div>
+                  <div className="pt-4 mt-auto">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        togglePackage(pkg.id);
+                      }}
+                      className={cn(
+                        "w-full py-4 rounded-2xl text-xs font-black uppercase tracking-[0.2em] transition-all duration-300 flex items-center justify-center gap-2 border-2",
+                        selectedPackages[pkg.id]
+                          ? "bg-brand-gold text-brand-black border-brand-gold shadow-lg shadow-brand-gold/20"
+                          : "bg-white text-brand-gold border-brand-gold/20 hover:border-brand-gold hover:bg-brand-gold hover:text-brand-black hover:shadow-xl"
+                      )}
+                    >
+                      {selectedPackages[pkg.id] ? (
+                        <>সিলেক্ট করা হয়েছে <Check size={16} className="stroke-[3]" /></>
+                      ) : (
+                        <>প্যাকেজটি সিলেক্ট করুন <Plus size={16} /> </>
+                      )}
+                    </button>
                   </div>
                 </div>
               </motion.div>
