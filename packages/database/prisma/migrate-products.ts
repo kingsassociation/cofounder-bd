@@ -16,7 +16,7 @@ async function main() {
         { id: 'bengolsale', name: 'BengolSale', slug: 'bengolsale' },
         { id: 'stylehunt', name: 'StyleHunt', slug: 'stylehunt' },
         { id: 'fruits-zone', name: 'Fruits Zone', slug: 'fruits-zone' },
-        { id: 'isratsshop', name: 'Israts Shop', slug: 'isratsshop' },
+        { id: 'tuhinscollectionsectionsections', name: 'Tuhins Collections', slug: 'tuhinscollections' },
     ]
 
     for (const brand of brands) {

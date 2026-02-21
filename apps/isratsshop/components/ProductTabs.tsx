@@ -25,7 +25,7 @@ export default function ProductTabs({
     "description" | "specifications" | "reviews"
   >("description");
   const specifications = [
-    { label: "Brand", value: product.category || "Israts Shop" },
+    { label: "Brand", value: product.category || "Tuhins Collections" },
     {
       label: "Product ID",
       value: `IS-${product.id.slice(-6).toUpperCase()}`,
@@ -113,7 +113,7 @@ export default function ProductTabs({
             </p>
             <div className="prose prose-sm sm:prose max-w-none text-gray-600">
               <p>
-                This premium product from Israts Shop offers exceptional quality
+                This premium product from Tuhins Collections offers exceptional quality
                 and style. Carefully crafted with attention to detail, it
                 combines functionality with modern design.
               </p>

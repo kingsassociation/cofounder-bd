@@ -13,7 +13,7 @@ interface BrandContextType {
 const BrandContext = createContext<BrandContextType | undefined>(undefined);
 
 export const DEFAULT_BRANDS: Brand[] = [
-    { id: 'isratsshop', name: 'Israts Shop', slug: 'isratsshop' },
+    { id: 'tuhinscollectionsectionsections', name: 'Tuhins Collections', slug: 'tuhinscollections' },
     { id: 'fruits-zone', name: 'Fruits Zone', slug: 'fruits-zone' },
     { id: 'stylehunt', name: 'StyleHunt', slug: 'stylehunt' },
     { id: 'bengolsale', name: 'BengolSale', slug: 'bengolsale' },

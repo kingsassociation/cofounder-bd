@@ -41,7 +41,7 @@ export default function ProductMainSection({ product }: { product: Product }) {
       content_category: product.category,
       value: product.price,
       currency: "BDT",
-      vendor: "isratsshop"
+      vendor: "tuhinscollections"
     });
   }, [product]);
 

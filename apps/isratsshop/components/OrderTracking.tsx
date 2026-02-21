@@ -18,7 +18,7 @@ export default function OrderTracking({ order }: OrderTrackingProps) {
       value: order.total,
       currency: "BDT",
       content_ids: order.items.map((item: any) => item.productId || item.product?.id),
-      vendor: "isratsshop"
+      vendor: "tuhinscollectionsections"
     });
   }, [order]);
 

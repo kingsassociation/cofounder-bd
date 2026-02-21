@@ -17,7 +17,7 @@ The **CoFounder Ecosystem** is a monorepo architecture designed to support multi
   /bengolsale      # Single-product landing page flow
   /stylehunt       # Single-product landing page flow
   /fruits-zone     # Premium multi-product landing page
-  /isratsshop      # Full e-commerce store (Flagship - formerly zest-wear)
+  /tuhinscollections      # Full e-commerce store (Flagship - formerly zest-wear)
   /control         # Centralized Admin Dashboard (New)
 
 /packages
@@ -35,7 +35,7 @@ The **CoFounder Ecosystem** is a monorepo architecture designed to support multi
 
 ### 🟢 Active & Stable
 
-#### **Isratsshop** (Flagship E-commerce - formerly Zest Wear)
+#### **tuhinscollections** (Flagship E-commerce - formerly Zest Wear)
 - **Type**: Full E-commerce Application
 - **Status**: **Stable (Production Ready)**
 - **Features Implemented**:
@@ -44,7 +44,7 @@ The **CoFounder Ecosystem** is a monorepo architecture designed to support multi
   - Shopping Cart & Wishlist
   - Order Management & Tracking
   - **Cleanup**: Local admin routes removed; managed via Control app.
-  - **Infrastructure**: Integrated into Master Database via `brandId: isratsshop`.
+  - **Infrastructure**: Integrated into Master Database via `brandId: tuhinscollections`.
 
 #### **Fruits Zone** (Premium Landing)
 - **Type**: Multi-Product Landing Page

@@ -5,10 +5,10 @@ async function main() {
 
     const brands = [
         {
-            id: "isratsshop",
-            name: "Israts Shop",
-            slug: "isratsshop",
-            domain: "isratsshop.com",
+            id: "tuhinscollections",
+            name: "Tuhins Collections",
+            slug: "tuhinscollections",
+            domain: "tuhinscollections.com",
         },
         {
             id: "fruits-zone",

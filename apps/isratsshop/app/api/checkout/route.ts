@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
     });
     const order = await prisma.order.create({
       data: {
-        brandId: "isratsshop",
+        brandId: "tuhinscollections",
         userId: user.id,
         phoneNumber: formattedPhone,
         total,

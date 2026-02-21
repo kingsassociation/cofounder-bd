@@ -9,7 +9,7 @@
     "db:generate": "turbo run db:generate",
     "bengolsale:dev": "pnpm --filter @cofounder/bengolsale dev",
     "stylehunt:dev": "pnpm --filter @cofounder/stylehunt dev",
-    "isratsshop:dev": "pnpm --filter @cofounder/isratsshop dev",
+    "tuhinscollections:dev": "pnpm --filter @cofounder/tuhinscollections dev",
     "fruits-zone:dev": "pnpm --filter @cofounder/fruits-zone dev",
     "control:dev": "pnpm --filter @cofounder/control dev"
   },
