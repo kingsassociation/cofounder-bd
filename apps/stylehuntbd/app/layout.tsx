@@ -24,7 +24,7 @@ export default async function RootLayout({
       <WishlistInitializer />
       <html lang="en">
         <body className={inter.className}>
-          <FacebookPixel pixelId="3919035388228710" />
+          <FacebookPixel pixelId="1602723077629194" />
           <Navbar />
           {children}
           <Toaster position="top-right" richColors offset="80px" />

@@ -40,7 +40,7 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${playfair.variable} ${cinzel.variable} ${hindSiliguri.variable} antialiased`}
       >
-        <FacebookPixel pixelId="3919035388228710" />
+        <FacebookPixel pixelId="1971491320917937" />
         {children}
       </body>
     </html>

@@ -29,7 +29,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <FacebookPixel pixelId="3919035388228710" />
+        <FacebookPixel pixelId="1191798136098197" />
         {children}
         <Toaster position="bottom-center" richColors />
       </body>
