@@ -115,7 +115,7 @@ model CartItem {
 
 model Order {
   id              String      @id @default(cuid())
-  brandId         String?     @default("isratsshop")
+  brandId         String?     @default("cofounderbd")
   userId          String?
   total           Float
   status          OrderStatus @default(PENDING)

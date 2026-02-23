@@ -1,5 +1,0 @@
-{
-  "buildCommand": "cd ../.. && pnpm turbo run build --filter=@cofounder/cofounder-bd",
-  "installCommand": "pnpm install",
-  "framework": "nextjs"
-}
