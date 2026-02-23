@@ -6,13 +6,12 @@ interface FacebookPixelProps {
   pixelId?: string;
 }
 
-const FacebookPixel: React.FC<FacebookPixelProps> = ({ pixelId = "3919035388228710" }) => {
+const DEFAULT_PIXEL_ID = "3919035388228710";
+
+const FacebookPixel: React.FC<FacebookPixelProps> = ({ pixelId = DEFAULT_PIXEL_ID }) => {
   useEffect(() => {
     if (!pixelId) return;
     
-    // @ts-ignore
-    if (window.fbq) return;
-
     // Standard FB Pixel script injection
     (function(f: any, b: any, e: any, v: any, n?: any, t?: any, s?: any) {
       if (f.fbq) return;
