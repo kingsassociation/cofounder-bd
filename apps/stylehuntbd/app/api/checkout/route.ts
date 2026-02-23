@@ -104,7 +104,7 @@ export async function POST(request: NextRequest) {
         },
         items: {
           create: items.map((item: any) => ({
-            productId: item.id,
+            productId: item.originalId || item.id,
             quantity: item.quantity,
             price: item.price,
             selectedSize: item.selectedSize,
@@ -119,7 +119,7 @@ export async function POST(request: NextRequest) {
     });
     for (const item of items) {
       await prisma.product.update({
-        where: { id: String(item.id) },
+        where: { id: String(item.originalId || item.id) },
         data: {
           quantity: {
             decrement: item.quantity,

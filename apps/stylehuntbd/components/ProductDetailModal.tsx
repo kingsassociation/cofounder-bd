@@ -4,8 +4,10 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import ImageMagnifier from "./product/ImageMagnifier";
 interface Product {
   id: string;
+  originalId: string;
   name: string;
   description: string;
   price: number;
@@ -46,6 +48,7 @@ export default function ProductDetailModal({
     }
     addItem({
       id: product.id,
+      originalId: product.originalId,
       name: product.name,
       price: product.price,
       imageUrl: product.imageUrl,
@@ -96,13 +99,12 @@ export default function ProductDetailModal({
             <div className="grid md:grid-cols-2 gap-4 md:gap-6">
               {}
               <div className="relative w-full h-56 md:h-full md:min-h-[300px] bg-gray-50 rounded-lg overflow-hidden group">
-                <div className="relative w-full h-full cursor-zoom-in">
-                  <Image
+                <div className="relative w-full h-full">
+                  <ImageMagnifier
                     src={selectedColor ? ((product as any).images || [])?.find((img: any) => img.color === selectedColor)?.url || product.imageUrl : product.imageUrl}
                     alt={product.name}
-                    fill
-                    className="object-contain p-2 transition-transform duration-500 group-hover:scale-150"
-                    sizes="(max-width: 768px) 100vw, 50vw"
+                    className="w-full h-full object-contain p-2 transition-transform duration-500"
+                    containerClassName="relative w-full h-full overflow-hidden flex items-center justify-center cursor-none z-10"
                   />
                 </div>
                 {product.category && (

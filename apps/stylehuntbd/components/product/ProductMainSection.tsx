@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import WishlistButton from "../wishlist/WishlistButton";
+import ImageMagnifier from "./ImageMagnifier";
 interface ProductImage {
   id: string;
   url: string;
@@ -79,6 +80,7 @@ export default function ProductMainSection({
     }
     addItem({
       id: product.id,
+      originalId: product.id,
       name: product.name,
       price: product.price,
       imageUrl: currentImage,
@@ -112,13 +114,11 @@ export default function ProductMainSection({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 p-4 md:p-8">
         {}
         <div className="relative h-[300px] sm:h-[400px] lg:h-[500px] bg-gray-50 rounded-xl overflow-hidden group">
-          <Image
+          <ImageMagnifier
             src={currentImage}
             alt={product.name}
-            fill
-            className="object-contain p-4 transition-transform duration-500 group-hover:scale-125 cursor-zoom-in"
-            priority
-            sizes="(max-width: 768px) 100vw, 50vw"
+            className="w-full h-full object-contain p-4 transition-transform duration-500"
+            containerClassName="relative w-full h-full overflow-hidden flex items-center justify-center cursor-none z-10"
           />
           {product.category && (
             <div className="absolute top-3 left-3 bg-blue-600 text-white px-3 py-1.5 rounded-full text-xs font-semibold shadow-lg z-10">
