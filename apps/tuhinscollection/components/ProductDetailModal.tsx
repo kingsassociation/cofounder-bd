@@ -255,7 +255,9 @@ export default function ProductDetailModal({
                                 Select Color: <span className="text-gray-900">{selectedColor}</span>
                               </label>
                               <div className="flex flex-wrap gap-2">
-                                {(product.variants as any[] || []).map((v: any) => (
+                                {(product.variants as any[] || [])
+                                  .filter((v: any) => v.imageUrl === (product.variants as any[] || []).find((varnt: any) => varnt.color === selectedColor)?.imageUrl)
+                                  .map((v: any) => (
                                   <button
                                     key={v.color}
                                     onClick={() => setSelectedColor(v.color)}

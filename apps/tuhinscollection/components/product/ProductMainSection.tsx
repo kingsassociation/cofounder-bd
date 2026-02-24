@@ -232,19 +232,21 @@ export default function ProductMainSection({
                             Select Color: <span className="text-brand-600 font-bold">{selectedColor}</span>
                           </label>
                           <div className="flex flex-wrap gap-2">
-                            {(product.variants as any[] || []).map((v: any) => (
-                              <button
-                                key={v.color}
-                                onClick={() => setSelectedColor(v.color)}
-                                className={`px-4 py-2 rounded-lg border-2 transition-all text-sm font-bold ${
-                                  selectedColor === v.color
-                                    ? "bg-brand-600 text-white border-brand-600 shadow-md"
-                                    : "bg-white border-gray-100 text-gray-700 hover:border-brand-200"
-                                }`}
-                              >
-                                {v.color}
-                              </button>
-                            ))}
+                            {(product.variants as any[] || [])
+                              .filter((v: any) => v.imageUrl === (product.variants as any[] || []).find((varnt: any) => varnt.color === selectedColor)?.imageUrl)
+                              .map((v: any) => (
+                                <button
+                                  key={v.color}
+                                  onClick={() => setSelectedColor(v.color)}
+                                  className={`px-4 py-2 rounded-lg border-2 transition-all text-sm font-bold ${
+                                    selectedColor === v.color
+                                      ? "bg-brand-600 text-white border-brand-600 shadow-md"
+                                      : "bg-white border-gray-100 text-gray-700 hover:border-brand-200"
+                                  }`}
+                                >
+                                  {v.color}
+                                </button>
+                              ))}
                           </div>
                         </div>
                       </div>
