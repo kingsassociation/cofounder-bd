@@ -1,0 +1,1 @@
+import { DefaultSession } from "next-auth"declare module "next-auth" {    interface Session {        user: {            imageUrl?: string | null        } & DefaultSession["user"]    }    interface User {        imageUrl?: string | null    }}declare module "next-auth/jwt" {    interface JWT {        imageUrl?: string | null    }}
