@@ -87,6 +87,22 @@ export async function POST(request: NextRequest) {
       userId,
       email,
     });
+
+    console.log(`Checkout Debug: User found/created: ${user.id}`);
+
+    // Verify brand exists
+    const brand = await prisma.brand.findUnique({
+      where: { id: "stylehuntbd" }
+    });
+
+    if (!brand) {
+      console.error("Checkout Error: Brand 'stylehuntbd' not found in database");
+      return NextResponse.json(
+        { error: "Configuration error: Brand not found. Please run seed." },
+        { status: 500 }
+      );
+    }
+
     const order = await prisma.order.create({
       data: {
         brandId: "stylehuntbd",
@@ -110,6 +126,7 @@ export async function POST(request: NextRequest) {
             selectedSize: item.selectedSize,
             selectedColor: item.selectedColor,
             imageUrl: item.imageUrl,
+            name: item.name, // Added name for better tracking
           })),
         },
       },
@@ -117,15 +134,23 @@ export async function POST(request: NextRequest) {
         items: true,
       },
     });
+
+    console.log(`Checkout Debug: Order created: ${order.id}`);
+
     for (const item of items) {
-      await prisma.product.update({
-        where: { id: String(item.originalId || item.id) },
-        data: {
-          quantity: {
-            decrement: item.quantity,
+      try {
+        await prisma.product.update({
+          where: { id: String(item.originalId || item.id) },
+          data: {
+            quantity: {
+              decrement: item.quantity,
+            },
           },
-        },
-      });
+        });
+      } catch (updateError) {
+        console.error(`Failed to update quantity for product ${item.id}:`, updateError);
+        // We continue even if update fails to not block the order
+      }
     }
     if (user.email || email) {
       try {
@@ -144,10 +169,10 @@ export async function POST(request: NextRequest) {
       }
     }
     return NextResponse.json({ orderId: order.id }, { status: 201 });
-  } catch (error) {
-    console.error("Checkout error:", error);
+  } catch (error: any) {
+    console.error("Checkout error full details:", error);
     return NextResponse.json(
-      { error: "Failed to create order" },
+      { error: `Failed to create order: ${error.message || "Unknown error"}` },
       { status: 500 },
     );
   }
