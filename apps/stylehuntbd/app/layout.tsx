@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import AuthProvider from "@/components/auth/AuthProvider";
+import FacebookPixelTracker from "@/components/FacebookPixelTracker";
 import Navbar from "@/components/Navbar";
 import WishlistInitializer from "@/components/wishlist/WishlistInitializer";
 import { siteConfig } from "@/lib/site-config";
@@ -25,6 +26,7 @@ export default async function RootLayout({
       <html lang="en">
         <body className={inter.className}>
           <FacebookPixel pixelId="1602723077629194" />
+          <FacebookPixelTracker />
           <Navbar />
           {children}
           <Toaster position="top-right" richColors offset="80px" />

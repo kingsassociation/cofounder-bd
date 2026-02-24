@@ -1,5 +1,6 @@
 "use client";
 import { useCartStore } from "@/lib/cart-store";
+import { trackEvent } from "@/lib/facebookPixel";
 import { ShoppingCart } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -41,6 +42,16 @@ export default function AddToCartButton({ product }: { product: Product }) {
       selectedSize,
       selectedColor,
     });
+
+    trackEvent("AddToCart", {
+      content_ids: [product.id],
+      content_name: product.name,
+      content_type: "product",
+      value: product.price,
+      currency: "BDT",
+      vendor: "stylehuntbd"
+    });
+
     toast.success(`${product.name} added to cart!`);
     setTimeout(() => {
       router.push("/cart");

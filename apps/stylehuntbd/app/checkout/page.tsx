@@ -126,17 +126,18 @@ export default function CheckoutPage() {
     fetchThanas();
   }, [formData.district, districts]);
   useEffect(() => {
-    if (items.length > 0 && !hasTrackedInitiate.current && total > 0) {
+    if (items.length > 0 && !hasTrackedInitiate.current && subtotal > 0) {
       trackEvent("InitiateCheckout", {
-        value: total,
+        value: total > 0 ? total : subtotal,
         currency: "BDT",
         content_ids: items.map(item => item.id),
         content_type: "product",
-        num_items: items.reduce((acc, item) => acc + item.quantity, 0)
+        num_items: items.reduce((acc, item) => acc + item.quantity, 0),
+        vendor: "stylehuntbd"
       });
       hasTrackedInitiate.current = true;
     }
-  }, [items.length, total]);
+  }, [items.length, subtotal, total]);
   useEffect(() => {
     if (session?.user) {
       setFormData((prev) => ({
@@ -219,6 +220,18 @@ export default function CheckoutPage() {
       if (!response.ok) {
         throw new Error(data.error || "Failed to create order");
       }
+
+      // Track Purchase event successfully here
+      trackEvent("Purchase", {
+        value: total,
+        currency: "BDT",
+        content_ids: items.map(item => item.id),
+        content_type: "product",
+        num_items: items.reduce((acc, item) => acc + item.quantity, 0),
+        order_id: data.orderId,
+        vendor: "stylehuntbd"
+      });
+
       if (saveAddress && session?.user) {
         try {
           await fetch("/api/user/addresses", {

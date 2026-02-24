@@ -72,16 +72,16 @@ const ProductHeroSlider = ({ products }: ProductHeroSliderProps) => {
                 </span>
               </div>
               {}
-              <div className="flex items-center mt-6 md:mt-8 gap-4">
+              <div className="flex items-center mt-6 md:mt-8 gap-3 md:gap-4">
                 <button
                   onClick={() => handleShopNow(product.id)}
-                  className="md:px-10 px-8 md:py-3.5 py-3 bg-gradient-to-r from-blue-600 to-blue-700 rounded-full text-white font-semibold hover:from-blue-700 hover:to-blue-800 transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-2xl"
+                  className="md:px-10 px-6 md:py-3.5 py-3 bg-gradient-to-r from-blue-600 to-blue-700 rounded-full text-white font-semibold hover:from-blue-700 hover:to-blue-800 transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-2xl whitespace-nowrap"
                 >
                   Shop Now
                 </button>
                 <button
                   onClick={handleExplore}
-                  className="group flex items-center gap-2 px-6 py-3 font-semibold text-gray-700 hover:text-blue-600 transition-all duration-300 hover:gap-3"
+                  className="group flex items-center gap-2 md:px-6 px-4 py-3 font-semibold text-gray-700 hover:text-blue-600 transition-all duration-300 hover:gap-3 whitespace-nowrap"
                 >
                   View All
                   <svg
@@ -101,19 +101,17 @@ const ProductHeroSlider = ({ products }: ProductHeroSliderProps) => {
               </div>
             </div>
             {}
-            <div className="flex items-center flex-1 justify-center relative">
-              <div className="relative w-full max-w-md md:max-w-lg">
-                {}
+            <div className="flex-1 w-full flex items-center justify-center relative mt-4 md:mt-0">
+              <div className="relative w-full max-w-sm md:max-w-lg">
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-52 h-52 md:w-80 md:h-80 bg-white rounded-full shadow-2xl"></div>
+                  <div className="w-48 h-48 md:w-80 md:h-80 bg-white/50 rounded-full blur-2xl md:blur-3xl"></div>
                 </div>
-                {}
-                <div className="relative h-64 md:h-96 transition-transform duration-500 hover:scale-105">
+                <div className="relative h-72 md:h-[450px] transition-transform duration-500 hover:scale-105">
                   <Image
                     src={product.imageUrl}
                     alt={product.name}
                     fill
-                    className="object-contain relative z-10 drop-shadow-xl"
+                    className="object-contain relative z-10 drop-shadow-2xl"
                     sizes="(max-width: 768px) 100vw, 50vw"
                     priority={
                       currentSlide ===

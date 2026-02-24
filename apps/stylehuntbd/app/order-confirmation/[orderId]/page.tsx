@@ -1,4 +1,3 @@
-import OrderTracking from "@/components/OrderTracking";
 import { prisma } from "@/lib/prisma";
 import { CheckCircle } from "lucide-react";
 import Image from "next/image";
@@ -37,7 +36,6 @@ export default async function OrderConfirmationPage(props: {
       <div className="max-w-3xl mx-auto px-4">
         {}
         <div className="text-center mb-8">
-           <OrderTracking order={order as any} />
            <CheckCircle className="w-20 h-20 text-green-500 mx-auto mb-4" />
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Order Confirmed!

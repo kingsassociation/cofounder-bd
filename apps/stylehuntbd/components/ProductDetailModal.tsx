@@ -1,8 +1,9 @@
 "use client";
 import { useCartStore } from "@/lib/cart-store";
+import { trackEvent } from "@/lib/facebookPixel";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import ImageMagnifier from "./product/ImageMagnifier";
 interface Product {
@@ -37,6 +38,36 @@ export default function ProductDetailModal({
   );
   const router = useRouter();
   const addItem = useCartStore((state) => state.addItem);
+  const handleAddToCart = () => {
+    if (product.hasVariants && product.size.length > 0 && !selectedSize) {
+      toast.error("Please select a size");
+      return;
+    }
+    if (product.hasVariants && product.color.length > 0 && !selectedColor) {
+      toast.error("Please select a color");
+      return;
+    }
+    addItem({
+      id: product.id,
+      originalId: product.originalId,
+      name: product.name,
+      price: product.price,
+      imageUrl: product.imageUrl,
+      selectedSize,
+      selectedColor,
+    });
+    
+    trackEvent("AddToCart", {
+      content_ids: [product.originalId || product.id],
+      content_name: product.name,
+      content_type: "product",
+      value: product.price,
+      currency: "BDT",
+      vendor: "stylehuntbd"
+    });
+
+    toast.success(`${product.name} added to cart!`);
+  };
   const handleBuyNow = () => {
     if (product.hasVariants && product.size.length > 0 && !selectedSize) {
       toast.error("Please select a size");
@@ -55,33 +86,58 @@ export default function ProductDetailModal({
       selectedSize,
       selectedColor,
     });
-    toast.success(`${product.name} added to cart!`);
+
+    trackEvent("AddToCart", {
+      content_ids: [product.originalId || product.id],
+      content_name: product.name,
+      content_type: "product",
+      value: product.price,
+      currency: "BDT",
+      vendor: "stylehuntbd"
+    });
+
+    toast.success(`Processing your order for ${product.name}...`);
     onClose();
     setTimeout(() => {
       router.push("/cart");
     }, 300);
   };
+
+  useEffect(() => {
+    if (isOpen) {
+      trackEvent("ViewContent", {
+        content_ids: [product.originalId || product.id],
+        content_name: product.name,
+        content_type: "product",
+        value: product.price,
+        currency: "BDT",
+        vendor: "stylehuntbd"
+      });
+    }
+  }, [isOpen, product]);
+
   if (!isOpen) return null;
   return (
     <>
-      {}
+      {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 animate-fade-in"
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] animate-fade-in"
         onClick={onClose}
       ></div>
-      {}
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Modal */}
+      <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 pointer-events-none">
         <div
-          className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[95vh] overflow-hidden animate-slide-up flex flex-col"
+          className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden animate-slide-up flex flex-col pointer-events-auto relative"
           onClick={(e) => e.stopPropagation()}
         >
-          {}
+          {/* Close Button - Top Right Corner Inside */}
           <button
             onClick={onClose}
-            className="absolute top-3 right-3 bg-white/90 backdrop-blur rounded-full p-1.5 shadow-md hover:bg-gray-100 transition-colors z-10"
+            className="absolute top-4 right-4 bg-white/90 backdrop-blur rounded-full p-2 shadow-lg hover:bg-gray-100 transition-all hover:rotate-90 z-[80] border border-gray-100"
+            aria-label="Close modal"
           >
             <svg
-              className="w-5 h-5 text-gray-600"
+              className="w-5 h-5 text-gray-900"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -89,76 +145,65 @@ export default function ProductDetailModal({
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth={2}
+                strokeWidth={2.5}
                 d="M6 18L18 6M6 6l12 12"
               />
             </svg>
           </button>
-          {}
-          <div className="p-4 md:p-6 overflow-y-auto flex-1">
-            <div className="grid md:grid-cols-2 gap-4 md:gap-6">
-              {}
-              <div className="relative w-full h-56 md:h-full md:min-h-[300px] bg-gray-50 rounded-lg overflow-hidden group">
-                <div className="relative w-full h-full">
+
+          <div className="p-4 md:p-8 overflow-y-auto flex-1">
+            <div className="grid md:grid-cols-2 gap-8">
+              {/* Product Image */}
+              <div className="relative w-full aspect-square md:aspect-auto bg-gray-50 rounded-xl overflow-hidden group">
+                <div className="relative w-full h-full min-h-[300px]">
                   <ImageMagnifier
                     src={selectedColor ? ((product as any).images || [])?.find((img: any) => img.color === selectedColor)?.url || product.imageUrl : product.imageUrl}
                     alt={product.name}
-                    className="w-full h-full object-contain p-2 transition-transform duration-500"
-                    containerClassName="relative w-full h-full overflow-hidden flex items-center justify-center cursor-none z-10"
+                    className="w-full h-full object-contain p-4"
+                    containerClassName="relative w-full h-full flex items-center justify-center cursor-none z-10"
                   />
                 </div>
                 {product.category && (
-                  <div className="absolute top-2 left-2 bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-semibold z-10">
+                  <div className="absolute top-4 left-4 bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-bold z-10 shadow-lg">
                     {product.category}
                   </div>
                 )}
-                {/* Variant Label */}
-                {selectedColor && (
-                  <div className="absolute bottom-2 left-2 bg-white/90 backdrop-blur px-2 py-1 rounded-md text-[10px] font-bold text-blue-600 shadow-sm z-10 border border-blue-100">
-                    {selectedColor}
-                  </div>
-                )}
-                <div className="absolute bottom-2 right-2 bg-black/70 text-white px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                  Hover to zoom
-                </div>
               </div>
-              {}
+
+              {/* Product Details */}
               <div className="flex flex-col">
-                <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">
+                <h2 className="text-2xl font-extrabold text-gray-900 mb-2 leading-tight">
                   {product.name}
                 </h2>
-                <p className="text-gray-600 text-sm leading-relaxed mb-3 line-clamp-3">
+                <p className="text-gray-600 text-sm leading-relaxed mb-6">
                   {product.description}
                 </p>
-                {}
-                <div className="flex items-baseline gap-2 mb-4">
-                  <span className="text-3xl font-bold text-blue-600">
+
+                <div className="flex items-baseline gap-3 mb-6">
+                  <span className="text-3xl font-black text-blue-600">
                     ৳{product.price.toFixed(2)}
                   </span>
-                  <span className="text-xs text-gray-500">
-                    {product.quantity > 0
-                      ? `${product.quantity} in stock`
-                      : "Out of stock"}
+                  <span className={`text-xs font-bold px-2 py-1 rounded-md ${product.quantity > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                    {product.quantity > 0 ? 'IN STOCK' : 'OUT OF STOCK'}
                   </span>
                 </div>
-                {}
+
                 {product.hasVariants && (
-                  <div className="space-y-4 py-4 border-t">
-                    {/* Size Selector */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 py-4 border-t border-gray-100">
                     {product.size.length > 0 && (
-                      <div>
-                        <label className="block text-xs font-bold text-gray-800 mb-2 uppercase tracking-tight">
-                          Select Size:
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                          Select Size
                         </label>
                         <div className="flex flex-wrap gap-2">
                           {product.size.map((s) => (
                             <button
                               key={s}
                               onClick={() => setSelectedSize(s)}
-                              className={`px-4 py-2 rounded-lg border-2 transition-all text-sm font-semibold ${
+                              className={`px-3 py-1.5 rounded-lg border-2 transition-all font-bold text-xs ${
                                 selectedSize === s
-                                  ? "bg-blue-600 text-white border-blue-600 shadow-md transform scale-105"
-                                  : "bg-white border-gray-200 text-gray-700 hover:border-blue-400"
+                                  ? "bg-blue-600 border-blue-600 text-white shadow-md"
+                                  : "bg-white border-gray-100 text-gray-600 hover:border-blue-200"
                               }`}
                             >
                               {s}
@@ -168,23 +213,21 @@ export default function ProductDetailModal({
                       </div>
                     )}
 
-                    {/* Color Selector with Thumbnails for many colors */}
                     {product.color.length > 0 && (
-                      <div>
-                        <label className="block text-xs font-bold text-gray-800 mb-2 uppercase tracking-tight">
-                          Select Color ({product.color.length}): {selectedColor && <span className="text-blue-600 normal-case ml-1 font-medium">{selectedColor}</span>}
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                          Select Color: <span className="text-gray-900">{selectedColor}</span>
                         </label>
-                        <div className="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-7 gap-2">
+                        <div className="grid grid-cols-4 gap-1.5">
                           {(product as any).images?.map((img: any) => (
                             <button
                               key={img.id}
                               onClick={() => setSelectedColor(img.color)}
-                              className={`relative aspect-square rounded-lg border-2 transition-all overflow-hidden group ${
+                              className={`relative aspect-square rounded-lg border-2 transition-all overflow-hidden ${
                                 selectedColor === img.color
-                                  ? "border-blue-600 ring-2 ring-blue-100"
-                                  : "border-gray-100 hover:border-blue-300"
+                                  ? "border-blue-600 ring-2 ring-blue-50"
+                                  : "border-gray-100 hover:border-blue-200"
                               }`}
-                              title={img.color || "Product variant"}
                             >
                               <Image 
                                 src={img.url} 
@@ -192,13 +235,6 @@ export default function ProductDetailModal({
                                 fill 
                                 className="object-cover" 
                               />
-                              {selectedColor === img.color && (
-                                <div className="absolute top-0.5 right-0.5 bg-blue-600 rounded-full p-0.5 shadow-sm z-10">
-                                  <svg className="w-2 h-2 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                                  </svg>
-                                </div>
-                              )}
                             </button>
                           ))}
                         </div>
@@ -206,20 +242,21 @@ export default function ProductDetailModal({
                     )}
                   </div>
                 )}
-                {}
-                <div className="flex gap-2 pt-3 mt-auto">
+
+                <div className="grid grid-cols-2 gap-3 mt-auto pt-2">
+                  <button
+                    onClick={handleAddToCart}
+                    disabled={product.quantity === 0}
+                    className="bg-gray-900 text-white py-4 rounded-xl font-bold hover:bg-gray-800 transition-all active:scale-95 disabled:opacity-50"
+                  >
+                    Add to Cart
+                  </button>
                   <button
                     onClick={handleBuyNow}
                     disabled={product.quantity === 0}
-                    className="flex-1 bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-all duration-300 hover:scale-105 active:scale-95 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                    className="bg-blue-600 text-white py-4 rounded-xl font-bold hover:bg-blue-700 transition-all active:scale-95 shadow-lg shadow-blue-200 disabled:opacity-50"
                   >
                     Buy Now
-                  </button>
-                  <button
-                    onClick={onClose}
-                    className="px-6 py-3 border-2 border-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
-                  >
-                    Cancel
                   </button>
                 </div>
               </div>
