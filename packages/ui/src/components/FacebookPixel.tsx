@@ -14,7 +14,9 @@ const FacebookPixel: React.FC<FacebookPixelProps> = ({ pixelId = DEFAULT_PIXEL_I
     
     // Standard FB Pixel script injection
     (function(f: any, b: any, e: any, v: any, n?: any, t?: any, s?: any) {
-      if (f.fbq) return;
+      if (f.fbq && f.fbq.loaded) return;
+      
+      const oldFbq = f.fbq;
       n = f.fbq = function() {
         n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
       };
@@ -22,7 +24,7 @@ const FacebookPixel: React.FC<FacebookPixelProps> = ({ pixelId = DEFAULT_PIXEL_I
       n.push = n;
       n.loaded = !0;
       n.version = '2.0';
-      n.queue = [];
+      n.queue = (oldFbq && oldFbq.queue) || [];
       t = b.createElement(e);
       t.async = !0;
       t.src = v;
