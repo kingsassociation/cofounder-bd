@@ -103,6 +103,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Verify all products exist to prevent foreign key errors
+    for (const item of items) {
+      const pid = String(item.originalId || item.id);
+      const dbProduct = await prisma.product.findUnique({
+        where: { id: pid }
+      });
+      if (!dbProduct) {
+        console.error(`Checkout Error: Product ID ${pid} not found in database for item ${item.name}`);
+        return NextResponse.json(
+          { error: `Product '${item.name}' (ID: ${pid}) is not available. Please clear your cart and add it again.` },
+          { status: 400 }
+        );
+      }
+    }
+
     const order = await prisma.order.create({
       data: {
         brandId: "stylehuntbd",
