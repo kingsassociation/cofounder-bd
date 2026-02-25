@@ -38,7 +38,7 @@ export default function CheckoutPage() {
   const totalQuantity = items.reduce((acc, item) => acc + item.quantity, 0);
   
   const deliveryCharge = formData.deliveryLocation === "metro" ? 0 : 
-                        formData.deliveryLocation === "outside" ? 4000 : 7000;
+                        formData.deliveryLocation === "outside" ? 2000 : 4000;
                         
   const total = subtotal + deliveryCharge;
 
