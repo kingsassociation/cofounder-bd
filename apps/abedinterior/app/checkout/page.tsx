@@ -329,7 +329,7 @@ export default function CheckoutPage() {
                           className="sr-only"
                         />
                         <span className="font-bold text-sm">Outside Metro</span>
-                        <span className="text-xs opacity-80 mt-1">+4,000 BDT</span>
+                        <span className="text-xs opacity-80 mt-1">+2,000 BDT</span>
                       </label>
                       <label className={`flex flex-col items-center justify-center p-4 border rounded-xl cursor-pointer transition-all ${formData.deliveryLocation === 'coxsbazar' ? 'bg-brand-600 border-brand-600 text-white shadow-sm' : 'bg-neutral-50 border-neutral-200 text-neutral-600 hover:border-neutral-300'}`}>
                         <input
@@ -341,7 +341,7 @@ export default function CheckoutPage() {
                           className="sr-only"
                         />
                         <span className="font-bold text-sm">Cox's Bazar</span>
-                        <span className="text-xs opacity-80 mt-1">+7,000 BDT</span>
+                        <span className="text-xs opacity-80 mt-1">+4,000 BDT</span>
                       </label>
                     </div>
                   </div>
